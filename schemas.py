@@ -12,7 +12,7 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -23,7 +23,7 @@ class User(BaseModel):
     """
     name: str = Field(..., description="Full name")
     email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
+    address: Optional[str] = Field(None, description="Address")
     age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
     is_active: bool = Field(True, description="Whether user is active")
 
@@ -38,11 +38,18 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# WhatsApp Chatbot configuration schema
+class Chatbot(BaseModel):
+    """
+    Chatbot configuration per user for WhatsApp automation
+    Collection name: "chatbot"
+    """
+    user_email: str = Field(..., description="Owner email")
+    is_active: bool = Field(True, description="Whether chatbot is enabled")
+    webhook_url: Optional[str] = Field(None, description="Webhook endpoint to receive messages")
+    greeting_message: Optional[str] = Field("Hi! I'm your WhatsApp AI assistant.", description="Default greeting")
+    auto_replies: List[str] = Field(default_factory=lambda: [
+        "What's your order number?",
+        "We'll get back to you shortly.",
+        "Thank you for contacting us!"
+    ], description="Quick reply templates")
